@@ -1,24 +1,7 @@
-#imports
-import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
 
-from utils import get_best_correlators
-from templates import TemplatesModel
-
-#sets
-PATH = "../Datasets/Modified/mod_UCI_Credit_Card.csv"
-#df
-df = pd.read_csv(PATH)
-#correlation matrix
-corr = df.corr()
-#features
-features = get_best_correlators(corr,"Default payment")
-
-class KnnObject(TemplatesModel):
+class TemplatesModel:
     def __init__(self,dataf:pd.DataFrame):
-        TemplatesModel.__init__(self,dataf)
         self.df = dataf
 
     @classmethod
@@ -49,18 +32,12 @@ class KnnObject(TemplatesModel):
         opt_n = list(map(lambda x: x + 1, max_test_scores_ind))[0]   
         return opt_n
 
-if __name__ == "__main__":
+    def set_up_x_and_y(self,features:list):
+        """Choosing features and target
 
-    knnobject = KnnObject(df)
-    X,y = knnobject.set_up_x_and_y(features=features)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2)
-    n_number = knnobject.pick_n(X_train,y_train,X_test, y_test,n_=5)
+        return a tuple(X,y)
+        """
+        y = self.df["Default payment"].values
+        X = self.df.drop(features, axis = 1)
 
-    knn = KNeighborsClassifier(n_number)
-    knn.fit(X_train, y_train)
-
-    #scores
-    score = knn.score(X_test, y_test)
-    y_pred = knn.predict(X_test)
-
-    print("Model is accurate at {}%".format(score*100))
+        return(X,y)

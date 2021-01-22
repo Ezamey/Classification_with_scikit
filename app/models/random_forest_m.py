@@ -1,11 +1,12 @@
-#imports
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+from sklearn.ensemble import RandomForestClassifier
 
-from utils import get_best_correlators
 from templates import TemplatesModel
+from utils import get_best_correlators
 
 #sets
 PATH = "../Datasets/Modified/mod_UCI_Credit_Card.csv"
@@ -16,17 +17,18 @@ corr = df.corr()
 #features
 features = get_best_correlators(corr,"Default payment")
 
-class KnnObject(TemplatesModel):
+
+class RandomForestObject(TemplatesModel):
     def __init__(self,dataf:pd.DataFrame):
         TemplatesModel.__init__(self,dataf)
         self.df = dataf
 
     @classmethod
-    def pick_n(self,X_train, y_train,X_test, y_test,n_:int):
-        """#choose the best number for x up to 20 nearest neighbors
+    def pick_n(self,X_train, y_train,X_test, y_test,n_:int=10):
+        """#choose the best number for x up to 10 estimators
 
         Returns:
-            [int]: best number of n for knn
+            [int]: best number of n for RandomForestClassifier
         """
         train_score = []
         test_score = []
@@ -34,13 +36,13 @@ class KnnObject(TemplatesModel):
 
         for k in range(1, n_):
             k_vals.append(k)
-            knn = KNeighborsClassifier(n_neighbors = k)
-            knn.fit(X_train, y_train)
+            rfc = RandomForestClassifier(n_estimators = n_)
+            rfc.fit(X_train, y_train)
 
-            tr_score = knn.score(X_train, y_train)
+            tr_score = rfc.score(X_train, y_train)
             train_score.append(tr_score)
 
-            te_score = knn.score(X_test, y_test)
+            te_score = rfc.score(X_test, y_test)
             test_score.append(te_score)
 
         max_test_score = max(test_score)
@@ -50,17 +52,16 @@ class KnnObject(TemplatesModel):
         return opt_n
 
 if __name__ == "__main__":
-
-    knnobject = KnnObject(df)
-    X,y = knnobject.set_up_x_and_y(features=features)
+    rfcobject = RandomForestObject(df)
+    X,y = rfcobject.set_up_x_and_y(features=features)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2)
-    n_number = knnobject.pick_n(X_train,y_train,X_test, y_test,n_=5)
+    n_number = rfcobject.pick_n(X_train,y_train,X_test, y_test,n_=5)
 
-    knn = KNeighborsClassifier(n_number)
-    knn.fit(X_train, y_train)
+    rfc = RandomForestClassifier(n_estimators=n_number)
+    rfc.fit(X_train, y_train)
 
     #scores
-    score = knn.score(X_test, y_test)
-    y_pred = knn.predict(X_test)
+    score = rfc.score(X_test, y_test)
+    y_pred = rfc.predict(X_test)
 
     print("Model is accurate at {}%".format(score*100))
