@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        {% if title %}
+        <title>{{ title }}</title>
+        {% else %}
+        <title>Models Testing</title>
+        {% endif %}
+    </head>
+    <body>
+        <div class ="header_menu">
+            <p id = "menu">
+            <a class="link_menu" href="{{ url_for('models') }}">Models </a>
+            <a class="link_menu" href="{{ url_for('index') }}">Index </a>
+        </div>
+
+    {% block content %}{% endblock %}
+ 
+    </body>
+</html>
