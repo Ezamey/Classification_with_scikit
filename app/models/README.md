@@ -5,5 +5,5 @@
 1. Knn
 2. Decision Tree
 3. Logistic Regression
-4. Naive Bayes
+4. Extra Tree
 5. Random Forest
