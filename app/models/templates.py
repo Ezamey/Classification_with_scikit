@@ -38,6 +38,6 @@ class TemplatesModel:
         return a tuple(X,y)
         """
         y = self.df["Default payment"].values
-        X = self.df.drop(features, axis = 1)
+        X = self.df[features]
 
         return(X,y)

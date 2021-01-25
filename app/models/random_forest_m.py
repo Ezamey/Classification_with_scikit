@@ -64,4 +64,5 @@ if __name__ == "__main__":
     score = rfc.score(X_test, y_test)
     y_pred = rfc.predict(X_test)
 
-    print("Model is accurate at {}%".format(score*100))
+    print(classification_report(y_test, y_pred))
+    print("Model is accurate at {}%".format(round(score*100,3)))

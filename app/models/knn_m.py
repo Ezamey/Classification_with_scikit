@@ -12,7 +12,7 @@ PATH = "../Datasets/Modified/mod_UCI_Credit_Card.csv"
 #df
 df = pd.read_csv(PATH)
 #correlation matrix
-corr = df.corr()
+corr = df.corr()    
 #features
 features = get_best_correlators(corr,"Default payment")
 
@@ -62,5 +62,5 @@ if __name__ == "__main__":
     #scores
     score = knn.score(X_test, y_test)
     y_pred = knn.predict(X_test)
-
-    print("Model is accurate at {}%".format(score*100))
+    print(classification_report(y_test, y_pred))
+    print("Model is accurate at {}%".format(round(score*100,3)))
