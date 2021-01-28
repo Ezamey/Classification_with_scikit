@@ -1,10 +1,19 @@
 from flask import Flask
 
-
 from app.config import Config
 
 
-mln = Flask(__name__)
-mln.config.from_object(Config)
+def init_app():
+    """Construct core Flask application."""
+    app = Flask(__name__, instance_relative_config=False)
+    app.config.from_object(Config)
 
-from app import routes
+    with app.app_context():
+        # Import parts of our core Flask app
+        from . import routes
+
+        # Import Dash application
+        from .plotlydash.dashboard import init_dashboard
+        app = init_dashboard(app)
+
+        return app
